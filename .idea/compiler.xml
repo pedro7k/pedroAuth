@@ -6,8 +6,18 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="pedroAuth" />
+        <module name="pedro-auth-spring-boot-starter" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="pedro-auth-root" target="1.8" />
+      <module name="pedroAuth" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="pedro-auth-root" options="-parameters" />
+      <module name="pedro-auth-spring-boot-starter" options="-parameters" />
+    </option>
   </component>
 </project>
