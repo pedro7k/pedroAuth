@@ -4,6 +4,8 @@ import com.pedro.auth.model.User;
 import com.pedro.auth.subject.AuthSubject;
 import com.pedro.auth.subject.impl.DefaultAuthSubject;
 import com.pedro.auth.util.CookieUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -17,7 +19,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * 请求拦截器
  */
 @Component
-public class UserAuthInterceptor implements HandlerInterceptor { // TODO 注册webmvc...
+public class UserAuthInterceptor implements HandlerInterceptor {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserAuthInterceptor.class);
 
     @Resource
     private UserContextHolder userContextHolder;
@@ -31,6 +35,7 @@ public class UserAuthInterceptor implements HandlerInterceptor { // TODO 注册w
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
+        logger.info("前置拦截");
         String username = null;
 
         // 1.尝试从session中获得username
@@ -72,7 +77,7 @@ public class UserAuthInterceptor implements HandlerInterceptor { // TODO 注册w
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
 
-        if (userContextHolder.getUserContext().getUser() != null) {
+        if (userContextHolder.getUserContext().beAuthed()) {
             User user = userContextHolder.getUserContext().getUser();
             // 1.将username,authSubject存入缓存
             cache.put(user.getUsername(), userContextHolder.getUserContext());

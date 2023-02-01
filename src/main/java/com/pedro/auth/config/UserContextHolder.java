@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserContextHolder {
 
-    private final ThreadLocal<AuthSubject> userContext = new ThreadLocal<AuthSubject>();
+    private final ThreadLocal<AuthSubject> userContext = new ThreadLocal<>();
 
     public void setUserContext(AuthSubject authSubject){
         userContext.set(authSubject);

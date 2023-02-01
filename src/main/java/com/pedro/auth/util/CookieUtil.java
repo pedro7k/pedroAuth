@@ -15,6 +15,9 @@ public class CookieUtil {
             throw new IllegalArgumentException("[pedroAuth] CookieUtil 参数为空！");
         }
         Cookie[] cookies = request.getCookies();
+        if (cookies == null){
+            return null;
+        }
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals(name)) {
                 return cookie.getValue();
