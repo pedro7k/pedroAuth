@@ -20,7 +20,7 @@ public class User {
     /**
      * 权限列表
      */
-    private List<String> permissionList;
+    private List<String> roleList;
 
     /**
      * md5盐值加密-盐值
@@ -35,16 +35,10 @@ public class User {
         this.password = password;
     }
 
-    public User(String username, String password, List<String> permissionList) {
+    public User(String username, String password, List<String> roleList, String salt) {
         this.username = username;
         this.password = password;
-        this.permissionList = permissionList;
-    }
-
-    public User(String username, String password, List<String> permissionList, String salt) {
-        this.username = username;
-        this.password = password;
-        this.permissionList = permissionList;
+        this.roleList = roleList;
         this.salt = salt;
     }
 
@@ -64,12 +58,12 @@ public class User {
         this.password = password;
     }
 
-    public List<String> getPermissionList() {
-        return permissionList;
+    public List<String> getRoleList() {
+        return roleList;
     }
 
-    public void setPermissionList(List<String> permissionList) {
-        this.permissionList = permissionList;
+    public void setRoleList(List<String> roleList) {
+        this.roleList = roleList;
     }
 
     public String getSalt() {
