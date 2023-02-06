@@ -24,6 +24,11 @@ public class AuthInfoAutoConfig implements EnvironmentAware {
     private static final Logger logger = LoggerFactory.getLogger(AuthInfoAutoConfig.class);
 
     /**
+     * 逗号
+     */
+    private static final String COMMA = ",";
+
+    /**
      * 权限配置组
      * key：path
      * value：RuleInfo
@@ -61,13 +66,16 @@ public class AuthInfoAutoConfig implements EnvironmentAware {
 
         // 2.基本参数
         defaultAuthInfo = environment.getProperty(prefix + authLevelPrefix + "default");
+        if (defaultAuthInfo != null && !RuleLevelEnum.isDefaultRuleLevelLegal(defaultAuthInfo)) {
+            throw new RuntimeException("[pedroAuth]配置文件错误 default");
+        }
         noAuthPath = environment.getProperty(prefix + "no-auth-path");
         noRolePath = environment.getProperty(prefix + "no-role-path");
 
         // 3.权限信息
         String ruleList = environment.getProperty(prefix + authLevelPrefix + "rule-list");
         assert ruleList != null;
-        for (String ruleKey : ruleList.split(",")) {
+        for (String ruleKey : ruleList.split(COMMA)) {
             // 解析属性
             Map<String, Object> pathAuthInfoProps = PropertyUtil.handle(environment, prefix + authLevelPrefix + ruleKey, Map.class);
             loadRule(pathAuthInfoProps);
@@ -75,7 +83,7 @@ public class AuthInfoAutoConfig implements EnvironmentAware {
     }
 
     /**
-     * 加载单挑规则
+     * 加载单条规则
      *
      * @param pathAuthInfoProps
      */
@@ -84,28 +92,32 @@ public class AuthInfoAutoConfig implements EnvironmentAware {
         // 路径
         Object path = pathAuthInfoProps.get("path");
         if (path == null || path.toString().isEmpty()) {
-            throw new RuntimeException("[pedroAuth]配置文件错误");
+            logger.error("[pedroAuth]配置文件错误 path={}", path);
+            throw new RuntimeException("[pedroAuth]配置文件错误 path配置");
         }
         rule.setPath(path.toString());
         // 级别
         Object level = pathAuthInfoProps.get("level");
-        if (level == null || level.toString().isEmpty() || RuleLevelEnum.isRuleLevelLegal(level.toString())) {
-            throw new RuntimeException("[pedroAuth]配置文件错误");
+        if (level == null || level.toString().isEmpty() || !RuleLevelEnum.isRuleLevelLegal(level.toString())) {
+            logger.error("[pedroAuth]配置文件错误 level={}", level);
+            throw new RuntimeException("[pedroAuth]配置文件错误 level配置");
         }
         rule.setLevel(level.toString());
 
         if (rule.getLevel().equals(RuleLevelEnum.NEED_ROLE.getLevel())) {
             // 角色
             Object roles = pathAuthInfoProps.get("roles");
-            if (roles == null || roles.toString().isEmpty() || RoleRuleEnum.isRoleRuleLegal(roles.toString())) {
-                throw new RuntimeException("[pedroAuth]配置文件错误");
+            if (roles == null || roles.toString().isEmpty()) {
+                logger.error("[pedroAuth]配置文件错误 roles为空");
+                throw new RuntimeException("[pedroAuth]配置文件错误 roles配置");
             }
             String roleString = roles.toString();
-            List<String> roleSet = new ArrayList<>(Arrays.asList(roleString.trim().split(",")));
-            rule.setRoles(roleSet);
+            List<String> roleList = new ArrayList<>(Arrays.asList(roleString.trim().split(COMMA)));
+            rule.setRoles(roleList);
             // 角色匹配规则
             Object roleRule = pathAuthInfoProps.get("roleRule");
-            if (roleRule == null || roleRule.toString().isEmpty()) {
+            if (roleRule == null || roleRule.toString().isEmpty() || !RoleRuleEnum.isRoleRuleLegal(roleRule.toString())) {
+                // 默认needOne
                 rule.setRoleRule(RoleRuleEnum.NEED_ONE.getType());
             } else {
                 rule.setRoleRule(roleRule.toString());

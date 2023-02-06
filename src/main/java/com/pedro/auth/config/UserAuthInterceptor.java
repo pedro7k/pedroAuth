@@ -18,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -45,8 +46,13 @@ public class UserAuthInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         logger.info("前置拦截");
-        String username = null;
 
+        // 0.无权限页
+        if (request.getRequestURI().equals("/roleDenied.html")){
+            return true;
+        }
+
+        String username = null;
         // 1.尝试从session中获得username
         Object sessionObject = request.getSession().getAttribute("username");
         if (sessionObject != null) {
@@ -75,10 +81,9 @@ public class UserAuthInterceptor implements HandlerInterceptor {
                     } else {
                         // 3.2.1.2 校验权限
                         boolean roleCheckResult = RoleCheckUtil.checkRole(authSubject.getUser().getRoleList(), rule.getRoles(), rule.getRoleRule());
-                        if (!roleCheckResult){
-                            // TODO 验证失败要跳转，拿配置文件里配置的，或者默认的
-                            request.getRequestDispatcher("/toLogin.do").forward(request, response);
-                            return true;
+                        if (!roleCheckResult) {
+                            redirect(request, response);
+                            return false;
                         }
 
                         return true;
@@ -91,9 +96,9 @@ public class UserAuthInterceptor implements HandlerInterceptor {
         }
 
         // 4.没拿到username或者缓存中找不到user信息：未认证
-        if (authInfoAutoConfig.getDefaultAuthInfo() != null && !authInfoAutoConfig.getDefaultAuthInfo().equals(RuleLevelEnum.NO_AUTH.getLevel())){
+        if (authInfoAutoConfig.getDefaultAuthInfo() != null && !authInfoAutoConfig.getDefaultAuthInfo().equals(RuleLevelEnum.NO_AUTH.getLevel())) {
             // 有配置默认权限，且默认权限不为NO_AUTH，说明不能通过
-            // TODO 验证失败要跳转，拿配置文件里配置的，或者默认的
+            redirect(request, response);
             return false;
         }
 
@@ -133,5 +138,27 @@ public class UserAuthInterceptor implements HandlerInterceptor {
 
         // 清空
         userContextHolder.clearUserContext();
+    }
+
+    /**
+     * 重定向到无权限页
+     *
+     * @param request
+     * @param response
+     * @throws IOException
+     */
+    public void redirect(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //获取当前请求的路径
+        String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+        //如果request.getHeader("X-Requested-With") 返回的是"XMLHttpRequest"说明就是ajax请求，需要特殊处理 否则直接重定向就可以了
+        if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
+            //告诉ajax本次拦截为重定向
+            response.setHeader("REDIRECT", "REDIRECT");
+            //告诉ajax重定向路径
+            response.setHeader("CONTENTPATH", basePath + "/roleDenied.html");
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        } else {
+            response.sendRedirect(basePath + "/roleDenied.html");
+        }
     }
 }

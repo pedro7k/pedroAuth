@@ -7,7 +7,7 @@ public enum RuleLevelEnum {
 
     NO_AUTH("noAuth"),
     NEED_AUTH("needAuth"),
-    NEED_ROLE("needRule");
+    NEED_ROLE("needRole");
 
     private String level;
 
@@ -31,5 +31,13 @@ public enum RuleLevelEnum {
         }
 
         return false;
+    }
+
+    /**
+     * 校验默认权限合法性
+     */
+    public static boolean isDefaultRuleLevelLegal(String arg) {
+
+        return NO_AUTH.getLevel().equals(arg) || NEED_AUTH.getLevel().equals(arg);
     }
 }
