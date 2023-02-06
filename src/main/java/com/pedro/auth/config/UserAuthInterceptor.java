@@ -86,6 +86,7 @@ public class UserAuthInterceptor implements HandlerInterceptor {
                         // 3.2.1.2 校验权限
                         boolean roleCheckResult = RoleCheckUtil.checkRole(user.getRoleList(), rule.getRoles(), rule.getRoleRule());
                         if (!roleCheckResult) {
+                            // TODO 跳转到无权限页
                             redirect(request, response);
                             return false;
                         }
@@ -112,6 +113,7 @@ public class UserAuthInterceptor implements HandlerInterceptor {
         }
 
         // 5.未认证且权限校验不通过
+        // TODO 跳转到未认证页（登陆页
         redirect(request, response);
         return false;
     }
@@ -131,6 +133,8 @@ public class UserAuthInterceptor implements HandlerInterceptor {
             if (authSubject.isLogout()) {
                 request.getSession().removeAttribute(TOKEN);
                 CookieUtil.removeTokenCookie(response);
+                // TODO 跳转到未认证页（登陆页
+                redirect(request, response);
                 return;
             }
 
