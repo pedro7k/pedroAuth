@@ -23,6 +23,11 @@ public class DefaultAuthSubject implements AuthSubject {
      */
     private boolean rememberMe = false;
 
+    /**
+     * 是否在本次请求中待注销
+     */
+    private boolean logout = false;
+
     @Override
     public boolean login(String username, String password, UserAccessFunction userAccessFunction) {
         return login(username, password, null, userAccessFunction);
@@ -65,8 +70,7 @@ public class DefaultAuthSubject implements AuthSubject {
 
     @Override
     public void logout() {
-        // TODO
-
+        this.logout = true;
     }
 
     @Override
@@ -84,6 +88,11 @@ public class DefaultAuthSubject implements AuthSubject {
         return user != null;
     }
 
+    @Override
+    public boolean isLogout() {
+        return logout;
+    }
+
     public DefaultAuthSubject() {
     }
 
@@ -96,6 +105,7 @@ public class DefaultAuthSubject implements AuthSubject {
     public void setUser(User user) {
         this.user = user;
     }
+
 
     public boolean isRememberMe() {
         return rememberMe;

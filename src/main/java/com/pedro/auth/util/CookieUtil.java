@@ -12,6 +12,7 @@ public class CookieUtil {
 
     /**
      * 从cookie中获取数据
+     *
      * @param request
      * @param name
      * @return
@@ -21,7 +22,7 @@ public class CookieUtil {
             throw new IllegalArgumentException("[pedroAuth] CookieUtil 参数为空！");
         }
         Cookie[] cookies = request.getCookies();
-        if (cookies == null){
+        if (cookies == null) {
             return null;
         }
         for (Cookie cookie : cookies) {
@@ -34,6 +35,7 @@ public class CookieUtil {
 
     /**
      * 向cookie中设置token
+     *
      * @param response
      * @param value
      */
@@ -47,5 +49,20 @@ public class CookieUtil {
         cookie.setMaxAge(60 * 60 * 24 * 7);
         response.addCookie(cookie);
 
+    }
+
+    /**
+     * 清除指定cookie中的token
+     *
+     * @param response
+     */
+    public static void removeTokenCookie(HttpServletResponse response) {
+        if (response == null) {
+            throw new IllegalArgumentException("[pedroAuth] CookieUtil 参数为空！");
+        }
+
+        Cookie cookie = new Cookie("token", null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
     }
 }

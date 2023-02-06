@@ -69,4 +69,9 @@ public interface AuthSubject {
      */
     boolean beAuthed();
 
+    /**
+     * 是否是注销，用于后置处理中清除session、cookie
+     */
+    boolean isLogout();
+
 }

@@ -29,6 +29,8 @@ public class UserAuthInterceptor implements HandlerInterceptor {
 
     private static final Logger logger = LoggerFactory.getLogger(UserAuthInterceptor.class);
 
+    private static final String TOKEN = "token";
+
     @Resource
     private AuthInfoAutoConfig authInfoAutoConfig;
 
@@ -54,14 +56,14 @@ public class UserAuthInterceptor implements HandlerInterceptor {
 
         String token = null;
         // 1.尝试从session中获得username
-        Object sessionObject = request.getSession().getAttribute("token");
+        Object sessionObject = request.getSession().getAttribute(TOKEN);
         if (sessionObject != null) {
             token = (String) sessionObject;
         }
 
         // 2.session中没有，尝试从Cookie中获取
         if (token == null) {
-            token = CookieUtil.getValue(request, "token");
+            token = CookieUtil.getValue(request, TOKEN);
         }
 
         String requestURI = request.getRequestURI();
@@ -120,22 +122,32 @@ public class UserAuthInterceptor implements HandlerInterceptor {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
 
+        AuthSubject authSubject = UserContextHolder.getUserContext();
+
         // 如果已被认证，发生在刚刚得到登录，或者之前就已经有session/cookie时
-        if (UserContextHolder.getUserContext().beAuthed()) {
-            // 1.获取相关信息
-            User user = UserContextHolder.getUserContext().getUser();
+        if (authSubject.beAuthed()) {
+
+            // 1.注销
+            if (authSubject.isLogout()) {
+                request.getSession().removeAttribute(TOKEN;
+                CookieUtil.removeTokenCookie(response);
+                return;
+            }
+
+            // 2.获取相关信息
+            User user = authSubject.getUser();
             String sessionId = request.getSession().getId();
 
-            // 2.如果当前浏览器并没有得到session, 设置相关数据
-            if (request.getSession().getAttribute("token") == null) {
+            // 3.如果当前浏览器并没有得到session, 设置相关数据
+            if (request.getSession().getAttribute(TOKEN) == null) {
                 // 2.1 将token到username存入缓存
                 cache.put(sessionId, user.getUsername());
                 // 2.2 将token存入session
-                request.getSession().setAttribute("token", sessionId);
+                request.getSession().setAttribute(TOKEN, sessionId);
             }
 
-            // 3.是否需要将token存入cookie，只在登陆时生效
-            if (CookieUtil.getValue(request, "token") == null && UserContextHolder.getUserContext().rememberMe()) {
+            // 4.是否需要将token存入cookie，只在登陆时生效
+            if (CookieUtil.getValue(request, TOKEN) == null && authSubject.rememberMe()) {
                 CookieUtil.setTokenCookie(response, sessionId);
             }
         }
