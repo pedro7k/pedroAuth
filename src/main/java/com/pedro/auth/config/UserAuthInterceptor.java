@@ -147,13 +147,13 @@ public class UserAuthInterceptor implements HandlerInterceptor {
      * @throws IOException
      */
     public void redirect(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        //获取当前请求的路径
+        // 获取当前请求的路径
         String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
         //如果request.getHeader("X-Requested-With") 返回的是"XMLHttpRequest"说明就是ajax请求，需要特殊处理 否则直接重定向就可以了
         if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
-            //告诉ajax本次拦截为重定向
+            // 告诉ajax本次拦截为重定向
             response.setHeader("REDIRECT", "REDIRECT");
-            //告诉ajax重定向路径
+            // 告诉ajax重定向路径
             response.setHeader("CONTENTPATH", basePath + "/roleDenied.html");
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         } else {
