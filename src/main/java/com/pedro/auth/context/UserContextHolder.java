@@ -1,4 +1,4 @@
-package com.pedro.auth.config;
+package com.pedro.auth.context;
 
 import com.pedro.auth.model.User;
 import com.pedro.auth.subject.AuthSubject;

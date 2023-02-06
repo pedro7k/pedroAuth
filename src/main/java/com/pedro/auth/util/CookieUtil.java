@@ -26,12 +26,12 @@ public class CookieUtil {
         return null;
     }
 
-    public static void setUserNameCookie(HttpServletResponse response, String value) {
+    public static void setTokenCookie(HttpServletResponse response, String value) {
         if (response == null || value == null) {
             throw new IllegalArgumentException("[pedroAuth] CookieUtil 参数为空！");
         }
 
-        Cookie cookie = new Cookie("username", value);
+        Cookie cookie = new Cookie("token", value);
         cookie.setMaxAge(60 * 60 * 24 * 7);
         response.addCookie(cookie);
 

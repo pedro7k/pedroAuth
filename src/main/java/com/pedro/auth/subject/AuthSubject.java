@@ -44,17 +44,22 @@ public interface AuthSubject {
     void logout();
 
     /**
+     * 设置当前用户
+     */
+    void setUser(User user);
+
+    /**
      * 获得当前用户
      */
     User getUser();
 
     /**
-     * 是否有记住我
+     * 是否有记住我，仅在登录请求中有用
      */
     boolean rememberMe();
 
     /**
-     * 是否认证
+     * 是否已经认证
      */
     boolean beAuthed();
 

@@ -1,6 +1,6 @@
 package com.pedro.auth.subject.api;
 
-import com.pedro.auth.config.UserContextHolder;
+import com.pedro.auth.context.UserContextHolder;
 import com.pedro.auth.subject.AuthSubject;
 
 /**
