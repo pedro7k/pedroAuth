@@ -10,6 +10,8 @@ import com.pedro.auth.subject.UserAccessFunction;
  */
 public class DefaultAuthSubject implements AuthSubject {
 
+    // TODO 当前所有用到创建AuthSubject的时候，都是直接用Default的，看一下怎么改。要改的话关注本类构造器的使用位置
+
     /**
      * 用户信息
      */
@@ -29,7 +31,11 @@ public class DefaultAuthSubject implements AuthSubject {
 
     @Override
     public boolean login(String username, String password, EncryptionEnum encryptionType, boolean rememberMe, UserAccessFunction userAccessFunction) {
-        // TODO
+
+        // 1.获取数据库中存储的用户数据
+        User user = userAccessFunction.getUserInfo(username);
+
+
         return false;
     }
 
@@ -41,8 +47,7 @@ public class DefaultAuthSubject implements AuthSubject {
 
     @Override
     public User getUser() {
-        // TODO
-        return null;
+        return user;
     }
 
     @Override

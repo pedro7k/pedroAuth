@@ -6,7 +6,7 @@ import com.pedro.auth.subject.AuthSubject;
 /**
  * 对外工具类
  */
-public class pedroAuthUtil {
+public class PedroAuthUtil {
 
     /**
      * 获得当前认证主体

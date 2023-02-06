@@ -33,7 +33,11 @@ public class UserAuthInterceptor implements HandlerInterceptor {
     @Resource
     private AuthInfoAutoConfig authInfoAutoConfig;
 
-    // TODO 优化为更好的，可淘汰的缓存；假如缓存淘汰了，可以重新直接取（可能需要用户提供username查找info的方法，来在缓存过期的时候重新查询）
+    /**
+     * 用户信息缓存
+     */
+    // TODO 可能在内存中存储过多用户信息，可否优化；现在的问题是如果缓存可淘汰，那么有session时无法重新获得用户信息
+    // TODO key是username并不合理
     public ConcurrentHashMap<String, AuthSubject> cache = new ConcurrentHashMap<>();
 
     /**
@@ -43,9 +47,10 @@ public class UserAuthInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         logger.info("前置拦截");
+        //String sessionID = request.getSession().getId();
 
         // 0.无权限页
-        if (request.getRequestURI().equals("/roleDenied.html")){
+        if (request.getRequestURI().equals("/roleDenied.html")) {
             return true;
         }
 
@@ -82,7 +87,6 @@ public class UserAuthInterceptor implements HandlerInterceptor {
                             redirect(request, response);
                             return false;
                         }
-
                         return true;
                     }
                 }
@@ -94,17 +98,11 @@ public class UserAuthInterceptor implements HandlerInterceptor {
 
         // 4.没拿到username或者缓存中找不到user信息：未认证
         if (authInfoAutoConfig.getDefaultAuthInfo() != null
-                && !authInfoAutoConfig.getDefaultAuthInfo().equals(RuleLevelEnum.NO_AUTH.getLevel())
-            ) {
+                && !authInfoAutoConfig.getDefaultAuthInfo().equals(RuleLevelEnum.NO_AUTH.getLevel())) {
             // 有配置默认权限，且默认权限不为NO_AUTH，说明不能通过
             redirect(request, response);
             return false;
         }
-        // TODO 第四步，假如默认是noauth，但是配置文件有auth，就给过了？？？？
-
-        // 5.确实是一个未认证请求，创建空AuthSubject供可能的认证操作
-        AuthSubject emptyAuthSubject = new DefaultAuthSubject();
-        UserContextHolder.setUserContext(emptyAuthSubject);
 
         return true;
     }
@@ -124,6 +122,7 @@ public class UserAuthInterceptor implements HandlerInterceptor {
             request.getSession().setAttribute("username", user.getUsername());
 
             // 3.是否需要将username存入cookie
+            // TODO cookie有效期
             if (UserContextHolder.getUserContext().rememberMe()) {
                 CookieUtil.setUserNameCookie(response, user.getUsername());
             }
