@@ -129,7 +129,7 @@ public class UserAuthInterceptor implements HandlerInterceptor {
 
             // 1.注销
             if (authSubject.isLogout()) {
-                request.getSession().removeAttribute(TOKEN;
+                request.getSession().removeAttribute(TOKEN);
                 CookieUtil.removeTokenCookie(response);
                 return;
             }
