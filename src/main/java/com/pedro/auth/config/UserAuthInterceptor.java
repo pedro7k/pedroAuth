@@ -31,9 +31,6 @@ public class UserAuthInterceptor implements HandlerInterceptor {
     private static final Logger logger = LoggerFactory.getLogger(UserAuthInterceptor.class);
 
     @Resource
-    private UserContextHolder userContextHolder;
-
-    @Resource
     private AuthInfoAutoConfig authInfoAutoConfig;
 
     // TODO 优化为更好的，可淘汰的缓存；假如缓存淘汰了，可以重新直接取（可能需要用户提供username查找info的方法，来在缓存过期的时候重新查询）
@@ -69,7 +66,7 @@ public class UserAuthInterceptor implements HandlerInterceptor {
             if (cache.containsKey(username) && cache.get(username).beAuthed()) {
                 // 3.1 已认证，设置到当前ThreadLocal内
                 AuthSubject authSubject = cache.get(username);
-                userContextHolder.setUserContext(authSubject);
+                UserContextHolder.setUserContext(authSubject);
                 // 3.2 权限验证-获得本条的权限要求
                 String requestURI = request.getRequestURI();
                 Rule rule = authInfoAutoConfig.getAuthRuleMap().get(requestURI);
@@ -96,15 +93,18 @@ public class UserAuthInterceptor implements HandlerInterceptor {
         }
 
         // 4.没拿到username或者缓存中找不到user信息：未认证
-        if (authInfoAutoConfig.getDefaultAuthInfo() != null && !authInfoAutoConfig.getDefaultAuthInfo().equals(RuleLevelEnum.NO_AUTH.getLevel())) {
+        if (authInfoAutoConfig.getDefaultAuthInfo() != null
+                && !authInfoAutoConfig.getDefaultAuthInfo().equals(RuleLevelEnum.NO_AUTH.getLevel())
+            ) {
             // 有配置默认权限，且默认权限不为NO_AUTH，说明不能通过
             redirect(request, response);
             return false;
         }
+        // TODO 第四步，假如默认是noauth，但是配置文件有auth，就给过了？？？？
 
         // 5.确实是一个未认证请求，创建空AuthSubject供可能的认证操作
         AuthSubject emptyAuthSubject = new DefaultAuthSubject();
-        userContextHolder.setUserContext(emptyAuthSubject);
+        UserContextHolder.setUserContext(emptyAuthSubject);
 
         return true;
     }
@@ -115,16 +115,16 @@ public class UserAuthInterceptor implements HandlerInterceptor {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
 
-        if (userContextHolder.getUserContext().beAuthed()) {
-            User user = userContextHolder.getUserContext().getUser();
+        if (UserContextHolder.getUserContext().beAuthed()) {
+            User user = UserContextHolder.getUserContext().getUser();
             // 1.将username,authSubject存入缓存
-            cache.put(user.getUsername(), userContextHolder.getUserContext());
+            cache.put(user.getUsername(), UserContextHolder.getUserContext());
 
             // 2.将username存入session
             request.getSession().setAttribute("username", user.getUsername());
 
             // 3.是否需要将username存入cookie
-            if (userContextHolder.getUserContext().rememberMe()) {
+            if (UserContextHolder.getUserContext().rememberMe()) {
                 CookieUtil.setUserNameCookie(response, user.getUsername());
             }
         }
@@ -137,7 +137,7 @@ public class UserAuthInterceptor implements HandlerInterceptor {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
 
         // 清空
-        userContextHolder.clearUserContext();
+        UserContextHolder.clearUserContext();
     }
 
     /**

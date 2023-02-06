@@ -2,25 +2,25 @@ package com.pedro.auth.config;
 
 import com.pedro.auth.model.User;
 import com.pedro.auth.subject.AuthSubject;
+import com.pedro.auth.subject.impl.DefaultAuthSubject;
 import org.springframework.stereotype.Component;
 
 /**
  * 用户信息上下文
  */
-@Component
 public class UserContextHolder {
 
-    private final ThreadLocal<AuthSubject> userContext = new ThreadLocal<>();
+    private static final ThreadLocal<AuthSubject> userContext = ThreadLocal.withInitial(DefaultAuthSubject::new);
 
-    public void setUserContext(AuthSubject authSubject){
+    public static void setUserContext(AuthSubject authSubject) {
         userContext.set(authSubject);
     }
 
-    public AuthSubject getUserContext(){
+    public static AuthSubject getUserContext() {
         return userContext.get();
     }
 
-    public void clearUserContext(){
+    public static void clearUserContext() {
         userContext.remove();
     }
 }

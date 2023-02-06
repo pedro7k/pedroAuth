@@ -1,4 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.pedro.auth.config.AuthInfoAutoConfig,\
   com.pedro.auth.config.WebMvcConfig,\
-  com.pedro.auth.config.UserAuthInterceptor,\
-  com.pedro.auth.config.UserContextHolder
+  com.pedro.auth.config.UserAuthInterceptor
