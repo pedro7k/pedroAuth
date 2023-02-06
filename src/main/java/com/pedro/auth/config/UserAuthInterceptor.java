@@ -37,8 +37,6 @@ public class UserAuthInterceptor implements HandlerInterceptor {
      * key: token
      * value: username
      */
-    // TODO 可能在内存中存储过多用户信息，可否优化；现在的问题是如果缓存可淘汰，那么有session时无法重新获得用户信息
-    // TODO key是username并不合理
     public ConcurrentHashMap<String, String> cache = new ConcurrentHashMap<>();
 
     /**
@@ -112,6 +110,7 @@ public class UserAuthInterceptor implements HandlerInterceptor {
         }
 
         // 5.未认证且权限校验不通过
+        redirect(request, response);
         return false;
     }
 
@@ -136,7 +135,6 @@ public class UserAuthInterceptor implements HandlerInterceptor {
             }
 
             // 3.是否需要将token存入cookie，只在登陆时生效
-            // TODO cookie有效期
             if (CookieUtil.getValue(request, "token") == null && UserContextHolder.getUserContext().rememberMe()) {
                 CookieUtil.setTokenCookie(response, sessionId);
             }

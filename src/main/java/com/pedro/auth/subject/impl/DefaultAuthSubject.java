@@ -34,6 +34,11 @@ public class DefaultAuthSubject implements AuthSubject {
     }
 
     @Override
+    public boolean login(String username, String password, boolean rememberMe, UserAccessFunction userAccessFunction) {
+        return login(username, password, null, rememberMe, userAccessFunction);
+    }
+
+    @Override
     public boolean login(String username, String password, EncryptionEnum encryptionType, boolean rememberMe, UserAccessFunction userAccessFunction) {
 
         // 1.缓存当前的userAccessFunction
@@ -50,9 +55,11 @@ public class DefaultAuthSubject implements AuthSubject {
 
         // 4.设置user
         setUser(user);
+
         // 5.设置记住我
         setRememberMe(rememberMe);
 
+        // 6.返回
         return true;
     }
 
