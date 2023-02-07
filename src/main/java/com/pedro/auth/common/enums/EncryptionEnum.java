@@ -1,4 +1,4 @@
-package com.pedro.auth.common;
+package com.pedro.auth.common.enums;
 
 /**
  * 加密方式枚举
@@ -16,9 +16,5 @@ public enum EncryptionEnum {
     /**
      * MD5加密
      */
-    MD5_ENCRYPTION,
-    /**
-     * MD5盐值加密
-     */
-    MD5_SALT_ENCRYPTION;
+    MD5_ENCRYPTION
 }

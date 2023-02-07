@@ -1,6 +1,6 @@
 package com.pedro.auth.util;
 
-import com.pedro.auth.common.RoleRuleEnum;
+import com.pedro.auth.common.enums.RoleRuleEnum;
 
 import java.util.List;
 

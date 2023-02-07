@@ -1,12 +1,11 @@
 package com.pedro.auth.config;
 
-import com.pedro.auth.common.RuleLevelEnum;
+import com.pedro.auth.common.enums.RuleLevelEnum;
 import com.pedro.auth.context.UserAccessFunctionContext;
 import com.pedro.auth.context.UserContextHolder;
 import com.pedro.auth.model.Rule;
 import com.pedro.auth.model.User;
 import com.pedro.auth.subject.AuthSubject;
-import com.pedro.auth.subject.UserAccessFunction;
 import com.pedro.auth.util.CookieUtil;
 import com.pedro.auth.util.RoleCheckUtil;
 import org.slf4j.Logger;
@@ -133,7 +132,7 @@ public class UserAuthInterceptor implements HandlerInterceptor {
             if (authSubject.isLogout()) {
                 request.getSession().removeAttribute(TOKEN);
                 CookieUtil.removeTokenCookie(response);
-                // TODO 跳转到未认证页（登陆页
+                // TODO  跳转到未认证页（登陆页
                 redirect(request, response);
                 return;
             }

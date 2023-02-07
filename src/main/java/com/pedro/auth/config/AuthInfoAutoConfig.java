@@ -1,15 +1,12 @@
 package com.pedro.auth.config;
 
-import com.pedro.auth.common.RoleRuleEnum;
-import com.pedro.auth.common.RuleLevelEnum;
+import com.pedro.auth.common.enums.RoleRuleEnum;
+import com.pedro.auth.common.enums.RuleLevelEnum;
 import com.pedro.auth.model.Rule;
-import com.pedro.auth.subject.AuthSubject;
-import com.pedro.auth.subject.impl.DefaultAuthSubject;
 import com.pedro.auth.util.PropertyUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.EnvironmentAware;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 

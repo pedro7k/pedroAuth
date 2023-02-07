@@ -1,4 +1,4 @@
-package com.pedro.auth.common;
+package com.pedro.auth.common.enums;
 
 /**
  * 规则等级枚举

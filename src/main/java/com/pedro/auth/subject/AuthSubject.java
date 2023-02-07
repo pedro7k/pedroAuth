@@ -1,6 +1,6 @@
 package com.pedro.auth.subject;
 
-import com.pedro.auth.common.EncryptionEnum;
+import com.pedro.auth.common.enums.EncryptionEnum;
 import com.pedro.auth.model.User;
 
 /**
