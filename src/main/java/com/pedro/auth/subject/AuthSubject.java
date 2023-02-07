@@ -47,7 +47,7 @@ public interface AuthSubject {
     /**
      * 注销
      */
-    void logout();
+    boolean logout();
 
     /**
      * 设置当前用户
@@ -70,8 +70,8 @@ public interface AuthSubject {
     boolean beAuthed();
 
     /**
-     * 是否是注销，用于后置处理中清除session、cookie
+     * 当前是否是一个登录请求
      */
-    boolean isLogout();
+    public boolean isLoginReq();
 
 }

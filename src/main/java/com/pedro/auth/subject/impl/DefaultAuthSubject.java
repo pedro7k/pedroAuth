@@ -10,13 +10,21 @@ import com.pedro.auth.encryption.EncryptionFacade;
 import com.pedro.auth.model.User;
 import com.pedro.auth.subject.AuthSubject;
 import com.pedro.auth.subject.UserAccessFunction;
+import com.pedro.auth.util.CookieUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * 默认权限主体实现
  */
 public class DefaultAuthSubject implements AuthSubject {
+
+    private static final String TOKEN = "token";
 
     private static final Logger logger = LoggerFactory.getLogger(UserAuthInterceptor.class);
 
@@ -33,9 +41,9 @@ public class DefaultAuthSubject implements AuthSubject {
     private boolean rememberMe = false;
 
     /**
-     * 是否在本次请求中待注销
+     * 当前是否是一个登录请求
      */
-    private boolean logout = false;
+    private boolean loginReq = false;
 
     @Override
     public boolean login(String username, String password, UserAccessFunction userAccessFunction) {
@@ -89,7 +97,10 @@ public class DefaultAuthSubject implements AuthSubject {
             // 5.设置记住我
             setRememberMe(rememberMe);
 
-            // 6.返回
+            // 6.设置当前是一个登录请求
+            setLoginReq(true);
+
+            // 7.返回
             return true;
         } catch (Throwable e) {
             logger.error("登陆中出现异常，msg={}", e.getMessage());
@@ -98,8 +109,26 @@ public class DefaultAuthSubject implements AuthSubject {
     }
 
     @Override
-    public void logout() {
-        this.logout = true;
+    public boolean logout() {
+        try {
+            // 1.获取所需对象
+            // 1.1 request和response
+            ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            if (requestAttributes == null) {
+                throw new PedroAuthException(PedroAuthExceptionEnum.GET_REQUEST_INFO_ERROR);
+            }
+            HttpServletRequest request = requestAttributes.getRequest();
+            HttpServletResponse response = requestAttributes.getResponse();
+
+            // 2.清除session和cookie
+            request.getSession().removeAttribute(TOKEN);
+            CookieUtil.removeTokenCookie(response);
+
+            // 3.返回
+            return true;
+        } catch (PedroAuthException e) {
+            return false;
+        }
     }
 
     @Override
@@ -117,10 +146,6 @@ public class DefaultAuthSubject implements AuthSubject {
         return user != null;
     }
 
-    @Override
-    public boolean isLogout() {
-        return logout;
-    }
 
     public DefaultAuthSubject() {
     }
@@ -142,5 +167,14 @@ public class DefaultAuthSubject implements AuthSubject {
 
     public void setRememberMe(boolean rememberMe) {
         this.rememberMe = rememberMe;
+    }
+
+    @Override
+    public boolean isLoginReq() {
+        return loginReq;
+    }
+
+    public void setLoginReq(boolean loginReq) {
+        this.loginReq = loginReq;
     }
 }
