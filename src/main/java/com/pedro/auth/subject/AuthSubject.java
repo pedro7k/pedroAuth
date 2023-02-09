@@ -72,6 +72,11 @@ public interface AuthSubject {
     /**
      * 当前是否是一个登录请求
      */
-    public boolean isLoginReq();
+    boolean isLoginReq();
+
+    /**
+     * 当前是否是一个注销请求
+     */
+    boolean isLogoutReq();
 
 }

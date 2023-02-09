@@ -94,7 +94,7 @@ public class UserAuthInterceptor implements HandlerInterceptor {
         }
 
         boolean withAnnotation = false;
-        if (handler instanceof HandlerMethod){
+        if (handler instanceof HandlerMethod) {
             HandlerMethod method = (HandlerMethod) handler;
             withAnnotation = method.getMethodAnnotation(MethodAuth.class) != null;
         }
@@ -135,17 +135,21 @@ public class UserAuthInterceptor implements HandlerInterceptor {
             User user = authSubject.getUser();
             String sessionId = request.getSession().getId();
 
-            // 2.如果当前浏览器并没有得到session, 设置相关数据
+            // 2.设置Session: 当前浏览器无session或刷新登陆状态 且 不能是logout
             if (request.getSession().getAttribute(TOKEN) == null || authSubject.isLoginReq()) {
-                // 2.1 将token到username存入缓存
-                cache.put(sessionId, user.getUsername());
-                // 2.2 将token存入session
-                request.getSession().setAttribute(TOKEN, sessionId);
+                if (!authSubject.isLogoutReq()) {
+                    // 2.1 将token到username存入缓存
+                    cache.put(sessionId, user.getUsername());
+                    // 2.2 将token存入session
+                    request.getSession().setAttribute(TOKEN, sessionId);
+                }
             }
 
             // 3.是否需要将token存入cookie，只在登陆时生效
             if ((CookieUtil.getValue(request, TOKEN) == null || authSubject.isLoginReq()) && authSubject.rememberMe()) {
-                CookieUtil.setTokenCookie(response, sessionId);
+                if (!authSubject.isLogoutReq()) {
+                    CookieUtil.setTokenCookie(response, sessionId);
+                }
             }
         }
     }
@@ -154,7 +158,8 @@ public class UserAuthInterceptor implements HandlerInterceptor {
      * 返回处理
      */
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception
+            ex) throws Exception {
 
         // 清空
         UserContextHolder.clearUserContext();

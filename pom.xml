@@ -108,6 +108,15 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <version>2.8.2</version>
+        <configuration>
+          <!-- altDeploymentRepository ：指定替代方案应该部署项目工件的存储库（除了指定的工件）。 -->
+          <altDeploymentRepository>internal.repo::default::file://${project.build.directory}/pedroAuth
+          </altDeploymentRepository>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>

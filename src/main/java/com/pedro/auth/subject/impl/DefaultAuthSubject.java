@@ -45,6 +45,11 @@ public class DefaultAuthSubject implements AuthSubject {
      */
     private boolean loginReq = false;
 
+    /**
+     * 当前是否是一个注销请求
+     */
+    private boolean logoutReq = false;
+
     @Override
     public boolean login(String username, String password, UserAccessFunction userAccessFunction) {
         return login(username, password, null, userAccessFunction);
@@ -124,7 +129,10 @@ public class DefaultAuthSubject implements AuthSubject {
             request.getSession().removeAttribute(TOKEN);
             CookieUtil.removeTokenCookie(response);
 
-            // 3.返回
+            // 3.设置当前是一个注销请求
+            setLogoutReq(true);
+
+            // 4.返回
             return true;
         } catch (PedroAuthException e) {
             return false;
@@ -174,7 +182,16 @@ public class DefaultAuthSubject implements AuthSubject {
         return loginReq;
     }
 
+    @Override
+    public boolean isLogoutReq() {
+        return logoutReq;
+    }
+
     public void setLoginReq(boolean loginReq) {
         this.loginReq = loginReq;
+    }
+
+    public void setLogoutReq(boolean logoutReq){
+        this.logoutReq = logoutReq;
     }
 }
