@@ -20,7 +20,7 @@ public class EncryptionUtil {
      * @return
      * @throws Throwable
      */
-    public static String encode(String username, String password, String salt, @Nullable EncryptionEnum encryptionEnum) throws Throwable {
+    public static String encode(String username, String password,@Nullable  String salt, EncryptionEnum encryptionEnum) throws Throwable {
         EncryptionFacade encryptionTool = EncryptionContext.encryptionToolMap.get(encryptionEnum);
         return encryptionTool.encode(username, password, salt);
     }
