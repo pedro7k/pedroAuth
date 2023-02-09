@@ -48,6 +48,14 @@
     </dependency>
   </dependencies>
 
+  <distributionManagement>
+    <repository>
+      <id>pedro7k</id>
+      <name>GitHub Release</name>
+      <url>https://maven.pkg.github.com/pedro7k/pedroAuth</url>
+    </repository>
+  </distributionManagement>
+
   <build>
     <finalName>pedro-auth-spring-boot-starter</finalName>
     <resources>
@@ -97,6 +105,18 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
         <version>2.1.2</version>
         <executions>
@@ -116,6 +136,37 @@
           <altDeploymentRepository>internal.repo::default::file://${project.build.directory}/pedroAuth
           </altDeploymentRepository>
         </configuration>
+      </plugin>
+      <!--github上传插件-->
+      <plugin>
+        <groupId>com.github.github</groupId>
+        <artifactId>site-maven-plugin</artifactId>
+        <version >0.12</version>
+        <configuration>
+          <message >Maven artifacts for ${project.version}</message>
+          <noJekyll>true</noJekyll>
+          <!--                    这个test-one和altDeploymentRepository中的对应-->
+          <outputDirectory>${project.build.directory}/pedroAuth</outputDirectory><!--本地jar地址-->
+          <!--                    分支说是要refs/heads/开头-->
+          <branch>refs/heads/main</branch><!--分支的名称-->
+          <merge>true</merge>
+          <includes>
+            <include>**/*</include>
+          </includes>
+          <!--对应github上创建的仓库名称 name-->
+          <repositoryName>pedroAuth</repositoryName>
+          <!--github 仓库所有者即登录用户名-->
+          <repositoryOwner>pedro7k</repositoryOwner>
+          <server>pedro7k</server>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>site</goal>
+            </goals>
+            <phase>deploy</phase>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
