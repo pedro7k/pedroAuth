@@ -107,6 +107,8 @@ public class DefaultAuthSubject implements AuthSubject {
 
             // 7.返回
             return true;
+        } catch (PedroAuthException e) {
+            throw e;
         } catch (Throwable e) {
             logger.error("登陆中出现异常，msg={}", e.getMessage());
             throw new PedroAuthException(PedroAuthExceptionEnum.LOGIN_ERROR);
