@@ -2,6 +2,8 @@
 
 轻量级的权限管理工具，支持极简配置进行web基础权限管理，避免传统权限管理工具的复杂代码配置。
 
+[TOC]
+
 ### 1. 功能特性
 
 - 通过配置文件或注解进行权限管理。
@@ -265,4 +267,3 @@ public enum EncryptionEnum {
 **不准确，懒得画，有空再画**
 
 ![image-20230210001216147](http://pedro-imgsubmit.oss-cn-beijing.aliyuncs.com/img/image-20230210001216147.png)
-
