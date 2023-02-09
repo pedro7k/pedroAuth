@@ -52,7 +52,7 @@
     <repository>
       <id>pedro7k</id>
       <name>GitHub Release</name>
-      <url>https://maven.pkg.github.com/pedro7k/pedroAuth</url>
+      <url>file://${project.build.directory}/pedroAuth</url>
     </repository>
   </distributionManagement>
 
